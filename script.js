@@ -136,8 +136,14 @@ function handleForm(formId, successId) {
     btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Sending…';
     btn.style.opacity = '.75';
 
-    // Simulate network delay
-    setTimeout(() => {
+    const data = new FormData(form);
+
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(data).toString()
+    })
+    .then(() => {
       btn.disabled = false;
       btn.innerHTML = originalText;
       btn.style.opacity = '';
@@ -148,10 +154,15 @@ function handleForm(formId, successId) {
         success.classList.add('show');
         setTimeout(() => success.classList.remove('show'), 5000);
       }
-    }, 1400);
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+      btn.style.opacity = '';
+      alert('Something went wrong. Please try again.');
+    });
   });
 }
-
 handleForm('estimate-form', 'estimate-success');
 handleForm('contact-form',  'contact-success');
 
