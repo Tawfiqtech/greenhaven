@@ -1,5 +1,2 @@
 [build]
-  publish = "Green-Haven"
-
-[build.processing]
-  skip_processing = false
+  publish = "."
