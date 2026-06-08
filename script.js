@@ -162,8 +162,8 @@ fetch(window.location.pathname, {
     });
   });
 }
-handleForm('estimate-form', 'estimate-success');
-handleForm('contact-form',  'contact-success');
+// handleForm('estimate-form', 'estimate-success');
+// handleForm('contact-form',  'contact-success');
 
 /* ---------- Smooth anchor links ---------- */
 document.querySelectorAll('a[href^="#"]').forEach(a => {
