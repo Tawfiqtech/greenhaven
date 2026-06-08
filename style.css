@@ -1233,3 +1233,25 @@ section { padding: 80px 0; }
   .hero__btns .btn { max-width: 280px; }
   .cta-banner .btn { max-width: 280px; }
 }
+/* Powered by TawfiqTech */
+.footer__powered {
+  text-align: center;
+  padding: 12px 0 4px;
+  font-size: .75rem;
+  color: rgba(255,255,255,.3);
+  border-top: 1px solid rgba(255,255,255,.06);
+  margin-top: 12px;
+}
+.footer__powered-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255,255,255,.5);
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 6px;
+  transition: color .2s;
+}
+.footer__powered-link:hover {
+  color: #C9A84C;
+}
