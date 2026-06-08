@@ -147,7 +147,7 @@
     if (current > 1) showStep(current - 1);
   });
 
-  /* ---- Submit ---- */
+ /* ---- Submit ---- */
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     if (!validateStep(current)) return;
@@ -156,22 +156,29 @@
     btnSubmit.innerHTML =
       '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Submitting…';
 
-    setTimeout(function () {
-      var name  = (document.getElementById('q-fname').value + ' ' + document.getElementById('q-lname').value).trim();
-      var email = document.getElementById('q-email').value;
-      var phone = document.getElementById('q-phone').value;
-      var addr  = [
-        document.getElementById('q-addr1').value,
-        document.getElementById('q-addr2').value,
-        document.getElementById('q-city').value,
-        document.getElementById('q-province').value,
-        document.getElementById('q-postal').value,
-      ].filter(Boolean).join(', ');
-      var beds  = document.getElementById('bedrooms').value;
-      var baths = document.getElementById('full-baths').value;
-      var cleanType = (document.querySelector('input[name="clean-type"]:checked') || {}).value || '—';
-      var freq      = (document.querySelector('input[name="frequency"]:checked')  || {}).value || '—';
+    var name  = (document.getElementById('q-fname').value + ' ' + document.getElementById('q-lname').value).trim();
+    var email = document.getElementById('q-email').value;
+    var phone = document.getElementById('q-phone').value;
+    var addr  = [
+      document.getElementById('q-addr1').value,
+      document.getElementById('q-addr2').value,
+      document.getElementById('q-city').value,
+      document.getElementById('q-province').value,
+      document.getElementById('q-postal').value,
+    ].filter(Boolean).join(', ');
+    var beds      = document.getElementById('bedrooms').value;
+    var baths     = document.getElementById('full-baths').value;
+    var cleanType = (document.querySelector('input[name="clean-type"]:checked') || {}).value || '—';
+    var freq      = (document.querySelector('input[name="frequency"]:checked')  || {}).value || '—';
 
+    var data = new FormData(form);
+
+    fetch(window.location.pathname, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(data).toString()
+    })
+    .then(function () {
       summary.innerHTML =
         '<p><strong>Name:</strong> '    + name    + '</p>' +
         '<p><strong>Email:</strong> '   + email   + '</p>' +
@@ -184,7 +191,12 @@
       qpCard.style.display   = 'none';
       thankyou.style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 1200);
+    })
+    .catch(function () {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = 'Submit My Request';
+      alert('Something went wrong. Please try again.');
+    });
   });
 
   /* ---- Init ---- */
