@@ -147,7 +147,7 @@
     if (current > 1) showStep(current - 1);
   });
 
- /* ---- Submit ---- */
+  /* ---- Submit ---- */
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     if (!validateStep(current)) return;
@@ -156,29 +156,23 @@
     btnSubmit.innerHTML =
       '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Submitting…';
 
-    var name  = (document.getElementById('q-fname').value + ' ' + document.getElementById('q-lname').value).trim();
-    var email = document.getElementById('q-email').value;
-    var phone = document.getElementById('q-phone').value;
-    var addr  = [
-      document.getElementById('q-addr1').value,
-      document.getElementById('q-addr2').value,
-      document.getElementById('q-city').value,
-      document.getElementById('q-province').value,
-      document.getElementById('q-postal').value,
-    ].filter(Boolean).join(', ');
-    var beds      = document.getElementById('bedrooms').value;
-    var baths     = document.getElementById('full-baths').value;
-    var cleanType = (document.querySelector('input[name="clean-type"]:checked') || {}).value || '—';
-    var freq      = (document.querySelector('input[name="frequency"]:checked')  || {}).value || '—';
+    // Builds the confirmation screen from what the user entered
+    function showThankYou() {
+      var name  = (document.getElementById('q-fname').value + ' ' + document.getElementById('q-lname').value).trim();
+      var email = document.getElementById('q-email').value;
+      var phone = document.getElementById('q-phone').value;
+      var addr  = [
+        document.getElementById('q-addr1').value,
+        document.getElementById('q-addr2').value,
+        document.getElementById('q-city').value,
+        document.getElementById('q-province').value,
+        document.getElementById('q-postal').value,
+      ].filter(Boolean).join(', ');
+      var beds  = document.getElementById('bedrooms').value;
+      var baths = document.getElementById('full-baths').value;
+      var cleanType = (document.querySelector('input[name="clean-type"]:checked') || {}).value || '—';
+      var freq      = (document.querySelector('input[name="frequency"]:checked')  || {}).value || '—';
 
-    var data = new FormData(form);
-
-    fetch(window.location.pathname, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(data).toString()
-    })
-    .then(function () {
       summary.innerHTML =
         '<p><strong>Name:</strong> '    + name    + '</p>' +
         '<p><strong>Email:</strong> '   + email   + '</p>' +
@@ -191,12 +185,29 @@
       qpCard.style.display   = 'none';
       thankyou.style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Actually send the data to Netlify. FormData grabs every named field
+    // across all steps (hidden steps are still in the DOM), including the
+    // hidden form-name and honeypot. URL-encoded body — Netlify needs that.
+    var body = new URLSearchParams(new FormData(form)).toString();
+
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body
     })
-    .catch(function () {
-      btnSubmit.disabled = false;
-      btnSubmit.innerHTML = 'Submit My Request';
-      alert('Something went wrong. Please try again.');
-    });
+      .then(function (res) {
+        if (!res.ok) throw new Error('Status ' + res.status);
+        showThankYou();
+      })
+      .catch(function (err) {
+        console.error('Quote submission failed:', err);
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Submit My Request';
+        showError('Something went wrong sending your request. Please try again, or call us at (604) 375-9391.');
+      });
   });
 
   /* ---- Init ---- */
