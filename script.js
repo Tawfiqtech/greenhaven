@@ -136,34 +136,40 @@ function handleForm(formId, successId) {
     btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Sending…';
     btn.style.opacity = '.75';
 
-    const data = new FormData(form);
-fetch(window.location.pathname, {
+    // Send to Netlify. FormData includes the hidden form-name + honeypot.
+    // URL-encoded body is required — Netlify does not accept JSON.
+    const body = new URLSearchParams(new FormData(form)).toString();
+
+    fetch('/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(data).toString()
+      body: body
     })
-    .then(() => {
-      btn.disabled = false;
-      btn.innerHTML = originalText;
-      btn.style.opacity = '';
-      form.reset();
+      .then((res) => {
+        if (!res.ok) throw new Error('Status ' + res.status);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        btn.style.opacity = '';
+        form.reset();
 
-      const success = document.getElementById(successId);
-      if (success) {
-        success.classList.add('show');
-        setTimeout(() => success.classList.remove('show'), 5000);
-      }
-    })
-    .catch(() => {
-      btn.disabled = false;
-      btn.innerHTML = originalText;
-      btn.style.opacity = '';
-      alert('Something went wrong. Please try again.');
-    });
+        const success = document.getElementById(successId);
+        if (success) {
+          success.classList.add('show');
+          setTimeout(() => success.classList.remove('show'), 5000);
+        }
+      })
+      .catch((err) => {
+        console.error('Form submission failed:', err);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        btn.style.opacity = '';
+        alert('Sorry — something went wrong sending your request. Please try again, or call us at (604) 375-9391.');
+      });
   });
 }
-// handleForm('estimate-form', 'estimate-success');
-// handleForm('contact-form',  'contact-success');
+
+handleForm('estimate-form', 'estimate-success');
+handleForm('contact-form',  'contact-success');
 
 /* ---------- Smooth anchor links ---------- */
 document.querySelectorAll('a[href^="#"]').forEach(a => {
