@@ -163,7 +163,7 @@ function handleForm(formId, successId) {
         btn.disabled = false;
         btn.innerHTML = originalText;
         btn.style.opacity = '';
-        alert('Sorry — something went wrong sending your request. Please try again, or call us at (604) 375-9391.');
+        alert('Sorry — something went wrong sending your request. Please try again, or call us at (604) 499-6282.');
       });
   });
 }
